@@ -22,7 +22,7 @@ namespace PacmanForms
         //    { 0, 0, 0, 0, 0, 0, 0 }
         //};
         Thread t;
-        //Map
+        //Map good
         ushort[,] map;
 
         int size25 = 25,
