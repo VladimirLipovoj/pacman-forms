@@ -22,7 +22,7 @@ namespace PacmanForms
         //    { 0, 0, 0, 0, 0, 0, 0 }
         //};
         Thread t;
-
+        //Map
         ushort[,] map;
 
         int size25 = 25,
@@ -43,9 +43,9 @@ namespace PacmanForms
 
         SolidBrush sb1 = new SolidBrush(Color.ForestGreen);
         Random rnd = new Random();
-        Image wall = new Bitmap("wall.png");
-        Image floor = new Bitmap("floor.png");
-        Image pacman = new Bitmap("pacman.png");
+        Image wall = new Bitmap("../../Assets/wall.png");
+        Image floor = new Bitmap("../../Assets/floor.png");
+        Image pacman = new Bitmap("../../Assets/pacman.png");
 
         int tileSize = 25;
 
