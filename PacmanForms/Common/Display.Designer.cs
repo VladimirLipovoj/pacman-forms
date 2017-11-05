@@ -1,6 +1,6 @@
 ﻿namespace PacmanForms
 {
-    partial class Form1
+    partial class Display
     {
         /// <summary>
         /// Обязательная переменная конструктора.

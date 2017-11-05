@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace PacmanForms
 {
-    public partial class Form1 : Form
+    public partial class Display : Form
     {
         //ushort[,] map = {
         //    { 0, 0, 0, 0, 0, 0, 0 },
@@ -50,7 +50,7 @@ namespace PacmanForms
         int tileSize = 25;
 
 
-        public Form1() {
+        public Display() {
             InitializeComponent();
             DoubleBuffered = true;
 
@@ -102,8 +102,8 @@ namespace PacmanForms
                     else
                         g.DrawImage(floor, offsetCenter + i * tileSize, j * tileSize, tileSize, tileSize);
                     ////Layer 2
-                    //if (map[x, y] == 2)
-                    //    pacmanCords.Add(new Point(offsetCenter + i * tileSize, j * tileSize));
+                    if (map[x, y] == 2)
+                        g.DrawImage(pacman, offsetCenter + i * tileSize, j * tileSize, tileSize, tileSize);
                 }
             }
             //Point p = pacmanCords.ToArray()[0];
