@@ -1,7 +1,9 @@
-﻿using System;
+﻿using PacmanForms.Common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -24,6 +26,19 @@ namespace PacmanForms
         Thread t;
         //Map good
         ushort[,] map;
+        ushort[,] mapPacman;
+
+        public enum tiles
+        {
+            floor,
+            wall
+        }
+
+        public enum entities
+        {
+            air,
+            pacman
+        }
 
         int size25 = 25,
             size49 = 49,
@@ -37,18 +52,72 @@ namespace PacmanForms
             size529 = 529,
             size625 = 625;
 
-        int side = 0;
+        public static int side = 0;
+        int addSize = 0;
 
         SolidBrush sb0 = new SolidBrush(Color.Firebrick);
 
         SolidBrush sb1 = new SolidBrush(Color.ForestGreen);
         Random rnd = new Random();
+
         Image wall = new Bitmap("../../Assets/wall.png");
         Image floor = new Bitmap("../../Assets/floor.png");
-        Image pacman = new Bitmap("../../Assets/pacman.png");
+
+        Pacman pacman;
 
         int tileSize = 25;
         int tileSizeWas;
+
+        private void Display_MouseMove(object sender, MouseEventArgs e)
+        {
+           
+        }
+
+        private void Display_MouseClick(object sender, MouseEventArgs e)
+        {
+            
+        }
+
+
+        private void Display_MouseDown(object sender, MouseEventArgs e)
+        {
+                
+        }
+
+        private void Display_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch(e.KeyCode)
+            {
+                case Keys.Up:
+                    pacman.direction = (int)Pacman.directions.up;
+                    break;
+                case Keys.Down:
+                    pacman.direction = (int)Pacman.directions.down;
+                    break;
+                case Keys.Left:
+                    pacman.direction = (int)Pacman.directions.left;
+                    break;
+                case Keys.Right:
+                    pacman.direction = (int)Pacman.directions.right;
+                    break;
+
+                case Keys.Add:
+                    addSize++;
+                    break;
+                case Keys.Subtract:
+                    addSize--;
+                    break;
+            }
+        }
+        private void Display_SizeChanged(object sender, EventArgs e)
+        {
+            Invalidate();
+        }
+
+        private void Display_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            t.Abort();
+        }
 
 
         public Display() {
@@ -58,81 +127,119 @@ namespace PacmanForms
 
             side = (int)Math.Sqrt(size625);
             map = new ushort[side, side];
+            mapPacman = new ushort[side, side];
             tileSizeWas = tileSize;
 
-            for(int i=0; i<1000; i++)
-                map[rnd.Next(0, side), rnd.Next(0, side)] = (ushort)rnd.Next(2);
+            for(int i=0; i<120; i++)
+            {
+                int rndX = rnd.Next(0, side);
+                int rndY = rnd.Next(0, side);
 
-            map[side / 2, side / 2] = 2;
+                if(rndX == side/2 && rndY == side/2)
+                    map[rndX, rndY] = (int)tiles.floor;
+                else
+                    map[rndX, rndY] = (int)tiles.wall;
+            }
+               
+
+
+            pacman = new Pacman(side / 2, side / 2);
+            mapPacman[side / 2, side / 2] = 1;
 
             t = new Thread(tick);
             t.Start();
         }
 
-        private void Form1_KeyDown(object sender, KeyEventArgs e) {
-            if (e.KeyCode == Keys.Right)
-                tileSize += 1;
-            else if (e.KeyCode == Keys.Left)
-                tileSize -= 1;
-        }
-
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        private void tick()
         {
-            t.Abort();
+            //                               fpc
+            double timePerTick = 1000000000 / 60;
+            double delta = 0;
+
+            long nano = 10000L * Stopwatch.GetTimestamp();
+            nano /= TimeSpan.TicksPerMillisecond;
+            nano *= 100L;
+
+            long now,
+                 timer = 0,
+                 lastTime = nano;
+
+            int ticks = 0;
+
+            while (true)
+            {
+
+                nano = 10000L * Stopwatch.GetTimestamp();
+                nano /= TimeSpan.TicksPerMillisecond;
+                nano *= 100L;
+
+                now = nano;
+                delta += (now - lastTime) / timePerTick;
+                timer = now - lastTime;
+                lastTime = now;
+
+
+                if (delta >= 1)
+                {
+                    pacman.tick(mapPacman);
+                    Invalidate();
+
+                    ticks++;
+                    delta--;
+                }
+
+                if (timer >= 1000000000)
+                {
+                    ticks = 0;
+                    timer = 0;
+                }
+
+            }
         }
 
-        private void Form1_Paint(object sender, PaintEventArgs e) {
+        private void Display_Paint(object sender, PaintEventArgs e)
+        {
             Graphics g = e.Graphics;
             g.Clear(Color.Black);
 
             //List<Point> pacmanCords = new List<Point>();
 
             //int offsetCenter = -Height / 2 + Width / 2 + tileSize;
-            
-                tileSize = -Height / 2 - Width / 2 + tileSize;
-                tileSize /= 40;
-                tileSize = -tileSize;
+
+            tileSize = -Height / 2 - Width / 2 + tileSize;
+            tileSize /= 40;
+            tileSize = -tileSize;
+            tileSize += addSize;
 
             int offsetW = Width / 2 - side * tileSize / 2;
-            int offsetH = Height / 2 - side * tileSize / 2;
+            int offsetH = (Height-tileSize) / 2 - side * tileSize / 2;
 
             //tileSize = (-Height - side * tileSizeWas)/60;
 
             //int offsetCenter = (Width/side)*8
 
-            for (int j = 0; j < side; j++) {
-                for (int i = 0; i < side; i++) {
+            for (int j = 0; j < side; j++)
+            {
+                for (int i = 0; i < side; i++)
+                {
                     //double relX = i / (Height / (double)tileSize);
                     //double relY = j / (Height / (double)tileSize);
                     //int x = (int)(relX * side);
                     //int y = (int)(relY * side);
 
                     //Layer 1
-                    if (map[i, j] == 0)
+                    if (map[i, j] == (int)tiles.wall)
                         g.DrawImage(wall, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
-                    else
+                    else if(map[i, j] == (int)tiles.floor)
                         g.DrawImage(floor, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
                     //Layer 2
-                    if (map[i, j] == 2)
-                        g.DrawImage(pacman, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
+                    if (mapPacman[i, j] == (int)entities.pacman)
+                        pacman.render(g, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
                 }
             }
             //Point p = pacmanCords.ToArray()[0];
             //g.DrawImage(pacman, p);
         }
 
-        private void Form1_SizeChanged(object sender, EventArgs e) {
-            Invalidate();
-        }
-
-        private void tick()
-        {
-            while (true)
-            {
-                label1.Text = $"Size = {tileSize}";
-                Invalidate();
-                Thread.Sleep(2);
-            }
-        }
     }
 }

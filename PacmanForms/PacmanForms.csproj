@@ -45,6 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Animation.cs" />
+    <Compile Include="Common\Assets.cs" />
+    <Compile Include="Common\Cropper.cs" />
     <Compile Include="Common\Display.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -52,6 +55,7 @@
       <DependentUpon>Display.cs</DependentUpon>
     </Compile>
     <Compile Include="Common\Main.cs" />
+    <Compile Include="Common\Pacman.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Common\Display.resx">
       <DependentUpon>Display.cs</DependentUpon>
