@@ -48,6 +48,7 @@ namespace PacmanForms
         Image pacman = new Bitmap("../../Assets/pacman.png");
 
         int tileSize = 25;
+        int tileSizeWas;
 
 
         public Display() {
@@ -57,6 +58,7 @@ namespace PacmanForms
 
             side = (int)Math.Sqrt(size625);
             map = new ushort[side, side];
+            tileSizeWas = tileSize;
 
             for(int i=0; i<1000; i++)
                 map[rnd.Next(0, side), rnd.Next(0, side)] = (ushort)rnd.Next(2);
@@ -85,25 +87,34 @@ namespace PacmanForms
 
             //List<Point> pacmanCords = new List<Point>();
 
-            int offsetCenter = -Height / 2 + (Width - side) / 2 + tileSize;
+            //int offsetCenter = -Height / 2 + Width / 2 + tileSize;
+            
+                tileSize = -Height / 2 - Width / 2 + tileSize;
+                tileSize /= 40;
+                tileSize = -tileSize;
+
+            int offsetW = Width / 2 - side * tileSize / 2;
+            int offsetH = Height / 2 - side * tileSize / 2;
+
+            //tileSize = (-Height - side * tileSizeWas)/60;
 
             //int offsetCenter = (Width/side)*8
 
-            for (int j = 0; j < Height / tileSize; j++) {
-                for (int i = 0; i < Height / tileSize; i++) {
-                    double relX = i / (Height / (double)tileSize);
-                    double relY = j / (Height / (double)tileSize);
-                    int x = (int)(relX * side);
-                    int y = (int)(relY * side);
+            for (int j = 0; j < side; j++) {
+                for (int i = 0; i < side; i++) {
+                    //double relX = i / (Height / (double)tileSize);
+                    //double relY = j / (Height / (double)tileSize);
+                    //int x = (int)(relX * side);
+                    //int y = (int)(relY * side);
 
                     //Layer 1
-                    if (map[x, y] == 0)
-                        g.DrawImage(wall, offsetCenter + i * tileSize, j * tileSize, tileSize, tileSize);
+                    if (map[i, j] == 0)
+                        g.DrawImage(wall, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
                     else
-                        g.DrawImage(floor, offsetCenter + i * tileSize, j * tileSize, tileSize, tileSize);
-                    ////Layer 2
-                    if (map[x, y] == 2)
-                        g.DrawImage(pacman, offsetCenter + i * tileSize, j * tileSize, tileSize, tileSize);
+                        g.DrawImage(floor, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
+                    //Layer 2
+                    if (map[i, j] == 2)
+                        g.DrawImage(pacman, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
                 }
             }
             //Point p = pacmanCords.ToArray()[0];
