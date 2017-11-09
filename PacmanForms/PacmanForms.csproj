@@ -34,6 +34,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,6 +58,11 @@
     </Compile>
     <Compile Include="Common\Main.cs" />
     <Compile Include="Common\Pacman.cs" />
+    <Compile Include="Model\BDPacman.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BDPacman.edmx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Common\Display.resx">
       <DependentUpon>Display.cs</DependentUpon>
@@ -69,6 +76,13 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EntityDeploy Include="Model\BDPacman.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>BDPacman.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Model\BDPacman.edmx.diagram">
+      <DependentUpon>BDPacman.edmx</DependentUpon>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

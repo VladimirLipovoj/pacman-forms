@@ -9,8 +9,8 @@ namespace PacmanForms.Common
 {
     class Pacman
     {
-        public int x { get; set; } 
-        public int y { get; set; } 
+        public double x { get; set; } 
+        public double y { get; set; } 
         public Animation right { get; set; }
         public Animation left { get; set; }
         public Animation up { get; set; }
@@ -18,6 +18,10 @@ namespace PacmanForms.Common
         public int direction { get; set; }
 
         private readonly int size = 24;
+        private double speed = 0;
+        private readonly int animationSpeed = 100;
+
+        public bool moving { get; set; }
 
         public enum directions
         {
@@ -36,82 +40,61 @@ namespace PacmanForms.Common
 
             Cropper c = new Cropper(new Bitmap("../../Assets/pacman.png"));
 
-            right = new Animation(300, new Bitmap[] {
+            right = new Animation(animationSpeed, new Bitmap[] {
                 c.Subimage(0,0, size, size),
                 c.Subimage(0, size, size, size)
             });
 
-            left = new Animation(300, new Bitmap[] {
+            left = new Animation(animationSpeed, new Bitmap[] {
                 c.Subimage(size, 0, size, size),
                 c.Subimage(size, size, size, size)
             });
 
-            up = new Animation(300, new Bitmap[] {
+            up = new Animation(animationSpeed, new Bitmap[] {
                 c.Subimage(size*2, 0, size, size),
                 c.Subimage(size*2, size, size, size)
             });
 
-            down = new Animation(300, new Bitmap[] {
+            down = new Animation(animationSpeed, new Bitmap[] {
                 c.Subimage(size*3, 0, size, size),
                 c.Subimage(size*3, size, size, size)
             });
 
         }
 
-        public void tick(ushort[,] mapPacman)
+        public void tick(int tileSize)
         {
-            int oldX = x,
-                oldY = y;
+            speed = tileSize/4;
 
-            move();
+            double oldX = x,
+                   oldY = y;
 
-            if ( (x < Display.side && y < Display.side) || (x > 0 && y > 0) )
-            {
-                mapPacman[oldX, oldY] = (int)Display.entities.air;
-                mapPacman[x, y] = (int)Display.entities.pacman;
-            } else
-            {
-                int oldDirection = direction;
-                Random rnd = new Random();
-
-                while(oldDirection == direction)
-                    direction = rnd.Next(4);
-                oldX = x;
-                oldY = y;
-
-                move();
-                mapPacman[oldX, oldY] = (int)Display.entities.air;
-                mapPacman[x, y] = (int)Display.entities.pacman;
-            }
-        }
-
-        public void move()
-        {
             switch (direction)
             {
                 case (int)directions.left:
                     left.tick();
-                    x--;
+                    x-= speed;
                     break;
 
                 case (int)directions.right:
                     right.tick();
-                    x++;
+                    x+= speed;
                     break;
 
                 case (int)directions.up:
                     up.tick();
-                    y++;
+                    y-= speed;
                     break;
 
                 case (int)directions.down:
                     down.tick();
-                    y--;
+                    y+= speed;
                     break;
             }
+            
         }
 
-        public void render(Graphics g, int x, int y, int width, int height)
+        public void render(Graphics g, int side, int tileSize, int offsetW, int offsetH)
         {
             Bitmap bmp = null;
             switch (direction)
@@ -133,7 +116,27 @@ namespace PacmanForms.Common
                     break;
             }
 
-            g.DrawImage(bmp, x, y, width, height);
+            moving = checkMoving(side, offsetW, offsetH, tileSize);
+
+            g.DrawImage(bmp, (int)(offsetW + x), (int)(offsetH + y), tileSize, tileSize);
+        }
+
+        private bool checkMoving(int side, int offsetW, int offsetH, int tileSize)
+        {
+            bool isMoving = true;
+
+            for (int j = 0; j < side; j++)
+            {
+                for (int i = 0; i < side; i++)
+                {
+                    Rectangle expected = new Rectangle(offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
+                    Rectangle real = new Rectangle((int)(offsetW + x), (int)(offsetH + y), tileSize, tileSize);
+                    if (moving && expected == real)
+                        isMoving = false;
+                }
+            }
+
+            return isMoving;
         }
 
     }

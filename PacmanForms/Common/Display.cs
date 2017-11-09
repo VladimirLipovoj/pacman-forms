@@ -26,7 +26,7 @@ namespace PacmanForms
         Thread t;
         //Map good
         ushort[,] map;
-        ushort[,] mapPacman;
+        //ushort[,] mapPacman;
 
         public enum tiles
         {
@@ -66,7 +66,6 @@ namespace PacmanForms
         Pacman pacman;
 
         int tileSize = 25;
-        int tileSizeWas;
 
         private void Display_MouseMove(object sender, MouseEventArgs e)
         {
@@ -86,21 +85,28 @@ namespace PacmanForms
 
         private void Display_KeyDown(object sender, KeyEventArgs e)
         {
-            switch(e.KeyCode)
-            {
-                case Keys.Up:
-                    pacman.direction = (int)Pacman.directions.up;
-                    break;
-                case Keys.Down:
-                    pacman.direction = (int)Pacman.directions.down;
-                    break;
-                case Keys.Left:
-                    pacman.direction = (int)Pacman.directions.left;
-                    break;
-                case Keys.Right:
-                    pacman.direction = (int)Pacman.directions.right;
-                    break;
+            //Pacman only
+            if (!pacman.moving) {
+                switch (e.KeyCode)
+                {
+                    case Keys.Up:
+                        pacman.direction = (int)Pacman.directions.up;
+                        break;
+                    case Keys.Down:
+                        pacman.direction = (int)Pacman.directions.down;
+                        break;
+                    case Keys.Left:
+                        pacman.direction = (int)Pacman.directions.left;
+                        break;
+                    case Keys.Right:
+                        pacman.direction = (int)Pacman.directions.right;
+                        break;
+                }
+            }
 
+            //Main
+            switch (e.KeyCode)
+            {
                 case Keys.Add:
                     addSize++;
                     break;
@@ -108,6 +114,7 @@ namespace PacmanForms
                     addSize--;
                     break;
             }
+
         }
         private void Display_SizeChanged(object sender, EventArgs e)
         {
@@ -127,8 +134,7 @@ namespace PacmanForms
 
             side = (int)Math.Sqrt(size625);
             map = new ushort[side, side];
-            mapPacman = new ushort[side, side];
-            tileSizeWas = tileSize;
+            //mapPacman = new ushort[side, side];
 
             for(int i=0; i<120; i++)
             {
@@ -140,11 +146,15 @@ namespace PacmanForms
                 else
                     map[rndX, rndY] = (int)tiles.wall;
             }
-               
 
 
-            pacman = new Pacman(side / 2, side / 2);
-            mapPacman[side / 2, side / 2] = 1;
+            tileSize = -Height / 2 - Width / 2 + tileSize;
+            tileSize /= 40;
+            tileSize = -tileSize;
+            tileSize += addSize;
+
+            pacman = new Pacman((side / 2) * tileSize, (side / 2) * tileSize);
+            //mapPacman[side / 2, side / 2] = 1;
 
             t = new Thread(tick);
             t.Start();
@@ -181,7 +191,7 @@ namespace PacmanForms
 
                 if (delta >= 1)
                 {
-                    pacman.tick(mapPacman);
+                    pacman.tick(tileSize);
                     Invalidate();
 
                     ticks++;
@@ -233,10 +243,10 @@ namespace PacmanForms
                     else if(map[i, j] == (int)tiles.floor)
                         g.DrawImage(floor, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
                     //Layer 2
-                    if (mapPacman[i, j] == (int)entities.pacman)
-                        pacman.render(g, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
                 }
             }
+
+            pacman.render(g, side, tileSize, offsetW, offsetH);
             //Point p = pacmanCords.ToArray()[0];
             //g.DrawImage(pacman, p);
         }
