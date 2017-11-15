@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PacmanForms.Common
 {
-    class Pacman
+    public class Pacman
     {
         public double x { get; set; } 
         public double y { get; set; } 
@@ -17,11 +17,14 @@ namespace PacmanForms.Common
         public Animation down { get; set; }
         public int direction { get; set; }
 
-        private readonly int size = 24;
+        private readonly int size = 72;
+        //24
         private double speed = 0;
         private readonly int animationSpeed = 100;
 
         public bool moving { get; set; }
+
+        private int prefferDirection = -1;
 
         public enum directions
         {
@@ -38,7 +41,7 @@ namespace PacmanForms.Common
 
             direction = (int)directions.right;
 
-            Cropper c = new Cropper(new Bitmap("../../Assets/pacman.png"));
+            Cropper c = new Cropper(new Bitmap("../../Assets/pacmanHD.png"));
 
             right = new Animation(animationSpeed, new Bitmap[] {
                 c.Subimage(0,0, size, size),
@@ -94,7 +97,7 @@ namespace PacmanForms.Common
             
         }
 
-        public void render(Graphics g, int side, int tileSize, int offsetW, int offsetH)
+        public void render(Graphics g, int tileSize, int offsetW, int offsetH)
         {
             Bitmap bmp = null;
             switch (direction)
@@ -115,15 +118,14 @@ namespace PacmanForms.Common
                     bmp = down.getCurrentFrame();
                     break;
             }
-
-            moving = checkMoving(side, offsetW, offsetH, tileSize);
+            
 
             g.DrawImage(bmp, (int)(offsetW + x), (int)(offsetH + y), tileSize, tileSize);
         }
 
-        private bool checkMoving(int side, int offsetW, int offsetH, int tileSize)
+        private bool checkCellMatch(int side, int offsetW, int offsetH, int tileSize)
         {
-            bool isMoving = true;
+            bool isMatching = true;
 
             for (int j = 0; j < side; j++)
             {
@@ -132,11 +134,11 @@ namespace PacmanForms.Common
                     Rectangle expected = new Rectangle(offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
                     Rectangle real = new Rectangle((int)(offsetW + x), (int)(offsetH + y), tileSize, tileSize);
                     if (moving && expected == real)
-                        isMoving = false;
+                        isMatching = false;
                 }
             }
 
-            return isMoving;
+            return isMatching;
         }
 
     }

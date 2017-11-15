@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PacmanForms.Common
 {
-    class Animation
+    public class Animation
     {
         private int speed, index;
         private long lastTime, timer;

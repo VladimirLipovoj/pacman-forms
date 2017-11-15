@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PacmanForms.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,9 +13,7 @@ namespace PacmanForms
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Display());
+            new Game();
         }
     }
 }

@@ -56,6 +56,7 @@
     <Compile Include="Common\Display.Designer.cs">
       <DependentUpon>Display.cs</DependentUpon>
     </Compile>
+    <Compile Include="Common\Game.cs" />
     <Compile Include="Common\Main.cs" />
     <Compile Include="Common\Pacman.cs" />
     <Compile Include="Model\BDPacman.Designer.cs">
@@ -80,6 +81,7 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>BDPacman.Designer.cs</LastGenOutput>
     </EntityDeploy>
+    <None Include="Assets\emulogic.ttf" />
     <None Include="Model\BDPacman.edmx.diagram">
       <DependentUpon>BDPacman.edmx</DependentUpon>
     </None>
@@ -100,6 +102,7 @@
   <ItemGroup>
     <Content Include="Assets\floor.png" />
     <Content Include="Assets\pacman.png" />
+    <Content Include="Assets\pacmanHD.png" />
     <Content Include="Assets\wall.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
