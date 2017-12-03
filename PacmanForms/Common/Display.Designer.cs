@@ -38,13 +38,6 @@
             this.ClientSize = new System.Drawing.Size(934, 562);
             this.Name = "Display";
             this.Text = "Pacman";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Display_FormClosed);
-            this.SizeChanged += new System.EventHandler(this.Display_SizeChanged);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Display_Paint);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Display_KeyDown);
-            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Display_MouseClick);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Display_MouseDown);
-            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Display_MouseMove);
             this.ResumeLayout(false);
 
         }

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace PacmanForms.Common
 {
@@ -24,7 +25,7 @@ namespace PacmanForms.Common
 
         public bool moving { get; set; }
 
-        private int prefferDirection = -1;
+        public int prefferDirection { get; set; } = -1;
 
         public enum directions
         {
@@ -100,6 +101,7 @@ namespace PacmanForms.Common
         public void render(Graphics g, int tileSize, int offsetW, int offsetH)
         {
             Bitmap bmp = null;
+
             switch (direction)
             {
                 case (int)directions.left:
@@ -118,7 +120,40 @@ namespace PacmanForms.Common
                     bmp = down.getCurrentFrame();
                     break;
             }
-            
+            //if(checkCellMatch(25, offsetW, offsetH, tileSize))
+            //    TextRenderer.DrawText(g, "true",
+            //                      Assets.menuFont,
+            //                      new Point(0, 0),
+            //                      Color.White);
+            //else
+            //    TextRenderer.DrawText(g, "true",
+            //                      Assets.menuFont,
+            //                      new Point(0, 0),
+            //                      Color.White);
+
+            if (prefferDirection != -1 && checkCellMatch(25, (int)(offsetW + x), (int)(offsetH + y), tileSize))
+            {
+                switch(prefferDirection)
+                {
+                    case (int)directions.left:
+                        direction = (int)directions.left;
+                        break;
+
+                    case (int)directions.right:
+                        direction = (int)directions.right;
+                        break;
+
+                    case (int)directions.up:
+                        direction = (int)directions.up;
+                        break;
+
+                    case (int)directions.down:
+                        direction = (int)directions.down;
+                        break;
+                }
+
+                prefferDirection = -1;
+            }
 
             g.DrawImage(bmp, (int)(offsetW + x), (int)(offsetH + y), tileSize, tileSize);
         }
@@ -133,7 +168,7 @@ namespace PacmanForms.Common
                 {
                     Rectangle expected = new Rectangle(offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
                     Rectangle real = new Rectangle((int)(offsetW + x), (int)(offsetH + y), tileSize, tileSize);
-                    if (moving && expected == real)
+                    if (expected.Equals(real))
                         isMatching = false;
                 }
             }
