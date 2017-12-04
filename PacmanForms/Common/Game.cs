@@ -13,11 +13,18 @@ namespace PacmanForms.Common
     {
         private Display display;
         public Thread t;
-        public ushort[,] map;
+
+        public ushort[,] map, mapPacman, mapDots, mapGhosts;
+
+        public enum tiles { floor, wall }
+        public enum pacmans { air, pacman }
+        public enum dots { air, dot, bigdot }
+        public enum ghosts { air, ghost, eatableGhost }
+
         public readonly int mapWidth = 25,
                             mapHeight = 25;
-        
-        
+
+
         public Pacman pacman;
         public int ticks { get; set; } = 0;
 
@@ -28,17 +35,22 @@ namespace PacmanForms.Common
         //Game resources
         public Image wall { get; set; } = new Bitmap("../../Assets/wall.png");
         public Image floor { get; set; } = new Bitmap("../../Assets/floor.png");
+        public Image dot { get; set; } = new Bitmap("../../Assets/dot.png");
+        public Image bigDot { get; set; } = new Bitmap("../../Assets/bigDot.png");
+        public Image ghost1 { get; set; } = new Bitmap("../../Assets/ghost1.png");
 
-        public enum tiles { floor, wall }
-        public enum entities { air, pacman }
-        
+        public Image ghost2 { get; set; } = new Bitmap("../../Assets/ghost2.png");
+
+        public Image ghost3 { get; set; } = new Bitmap("../../Assets/ghost3.png");
+
         public int tileSize = 25;
 
         public bool displayThread = false;
         public bool gameThread = false;
         public int orderTimer = 0;
 
-        public Game() {
+        public Game()
+        {
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -52,6 +64,9 @@ namespace PacmanForms.Common
             Assets.init();
 
             map = new ushort[mapWidth, mapHeight];
+            mapPacman = new ushort[mapWidth, mapHeight];
+            mapDots = new ushort[mapWidth, mapHeight];
+            mapGhosts = new ushort[mapWidth, mapHeight];
 
             tileSize = display.Height / (mapHeight - 2);
             pacman = new Pacman((mapWidth / 2) * tileSize, (mapHeight / 2) * tileSize);
@@ -73,12 +88,12 @@ namespace PacmanForms.Common
                         map[j, i] = (int)tiles.wall;
                     else if (j == 0)
                         map[j, i] = (int)tiles.wall;
-                    else if (i == mapWidth-1)
+                    else if (i == mapWidth - 1)
                         map[j, i] = (int)tiles.wall;
-                    else if (j == mapHeight-1)
+                    else if (j == mapHeight - 1)
                         map[j, i] = (int)tiles.wall;
 
-                    //                               fpc
+            //                               fpc
             double timePerTick = 1000000000 / 60;
             double delta = 0;
 
@@ -95,34 +110,33 @@ namespace PacmanForms.Common
             while (true)
             {
 
-                    nano = 10000L * Stopwatch.GetTimestamp();
-                    nano /= TimeSpan.TicksPerMillisecond;
-                    nano *= 100L;
+                nano = 10000L * Stopwatch.GetTimestamp();
+                nano /= TimeSpan.TicksPerMillisecond;
+                nano *= 100L;
 
-                    now = nano;
-                    delta += (now - lastTime) / timePerTick;
-                    timer = now - lastTime;
-                    lastTime = now;
+                now = nano;
+                delta += (now - lastTime) / timePerTick;
+                timer = now - lastTime;
+                lastTime = now;
 
 
-                    if (delta >= 1)
+                if (delta >= 1)
+                {
+                    if (pacman != null && display != null)
                     {
-                        if (pacman != null && display != null)
-                        {
-                            pacman.tick(tileSize);
-                            display.Invalidate();
-                        }
-
-                        ticks++;
-                        delta--;
+                        display.Invalidate();
                     }
 
-                    if (timer >= 1000000000)
-                    {
-                        ticks = 0;
-                        timer = 0;
-                    }
-                
+                    ticks++;
+                    delta--;
+                }
+
+                if (timer >= 1000000000)
+                {
+                    ticks = 0;
+                    timer = 0;
+                }
+
 
             }
         }
@@ -160,7 +174,7 @@ namespace PacmanForms.Common
         {
 
             Graphics g = e.Graphics;
-            g.Clear(Color.FromArgb(37,37,37));
+            g.Clear(Color.FromArgb(37, 37, 37));
 
             tileSize = display.Height / mapHeight;
             tileSize -= 4;
@@ -171,22 +185,34 @@ namespace PacmanForms.Common
             offsetH -= tileSize;
 
             for (int j = 0; j < mapWidth; j++)
+            {
+                for (int i = 0; i < mapHeight; i++)
                 {
-                    for (int i = 0; i < mapHeight; i++)
-                    {
-                        if (map[i, j] == (int)Game.tiles.wall)
-                            g.DrawImage(wall, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
-                        else if (map[i, j] == (int)Game.tiles.floor)
-                            g.DrawImage(floor, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
+                    if (map[i, j] == (int)tiles.wall)
+                        g.DrawImage(wall, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
+                    else if (map[i, j] == (int)tiles.floor)
+                        g.DrawImage(floor, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
 
-                    }
+                    if (mapDots[i, j] == (int)dots.dot)
+                        g.DrawImage(dot, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
+                    else if (mapDots[i, j] == (int)dots.bigdot)
+                        g.DrawImage(bigDot, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
+
+                    if (mapGhosts[i, j] == (int)ghosts.ghost)
+                        g.DrawImage(ghost, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
+                    else if (mapGhosts[i, j] == (int)ghosts.eatableGhost)
+                        g.DrawImage(eatableGhost, offsetW + i * tileSize, offsetH + j * tileSize, tileSize, tileSize);
+
+                    if (mapPacman[i, j] == (int)pacmans.pacman)
+                        pacman.render(g, tileSize, offsetW, offsetH);
                 }
+            }
 
-            pacman.render(g, tileSize, offsetW, offsetH);
 
-            TextRenderer.DrawText(g, $"tileSize = {tileSize}\nX = {pacman.x}\nY = {pacman.y}", 
-                                  Assets.menuFont, 
-                                  new Point(0, 50), 
+
+            TextRenderer.DrawText(g, $"tileSize = {tileSize}\nX = {pacman.x}\nY = {pacman.y}",
+                                  Assets.menuFont,
+                                  new Point(0, 50),
                                   Color.White);
 
             //g.DrawString($"tileSize = {tileSize}\nX = {pacman.x}\nY = {pacman.y}", Assets.menuFont, Brushes.White, 0, 0);
@@ -196,5 +222,5 @@ namespace PacmanForms.Common
 
         }
     }
- }
+}
 
